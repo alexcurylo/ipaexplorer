@@ -1,0 +1,25 @@
+GCC_PREFIX_HEADER = headers/IPAExplorer_Prefix.pch
+PRODUCT_NAME = IPAExplorer
+//MACOS_CREATOR = PMPE
+
+INFOPLIST_FILE = resources/Info.plist
+INFOPLIST_PREFIX_HEADER = resources/IPAExplorerVersion.h
+INFOPLIST_PREPROCESS = YES
+
+GCC_PRECOMPILE_PREFIX_HEADER = YES
+INSTALL_PATH = $(HOME)/Applications
+STANDARD_C_PLUS_PLUS_LIBRARY_TYPE = Dynamic
+GCC_SYMBOLS_PRIVATE_EXTERN = YES
+MACOS_TYPE = APPL
+WRAPPER_EXTENSION = app
+GENERATE_PKGINFO_FILE = NO
+PREBINDING = NO
+
+//HEADERS_VORBIS = "$(SRCROOT)/../libraries/libvorbis-1.1.1/include"
+//HEADERS_OGG = "$(SRCROOT)/../libraries/libogg-1.1.3/include"
+//HEADERS_FLAC = "$(SRCROOT)/../libraries/flac-1.1.2/include"
+//HEADERS_FAAC = "$(SRCROOT)/../libraries/faac-1.24/include"
+//HEADERS_MP4V2 = "$(SRCROOT)/../libraries/mp4v2-faad2-2.0"
+//HEADERS_LAME = "$(SRCROOT)/../libraries/lame-3.98.2/include"
+//HEADERS_TWOLAME = "$(SRCROOT)/../libraries/twolame-0.3.12/libtwolame"
+//HEADER_SEARCH_PATHS = $(HEADERS_VORBIS) $(HEADERS_OGG) $(HEADERS_FLAC) $(HEADERS_FAAC) $(HEADERS_MP4V2) $(HEADERS_LAME) $(HEADERS_TWOLAME)

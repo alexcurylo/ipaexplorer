@@ -1,0 +1,81 @@
+// notes.txt
+
+Apple ID : destinymedia/asdfgh
+destiny.media.technologies@gmail.com
+alex.curylo@dsny.com
+Enrollment ID : 76G9YR56UK
+ADC letter sent 11/24
+
+********************
+
+New tags in downloaded files, UXXX, in UTF8 format, only exist in newer downloads from (v4, stuffs in PlayMPE Dev or PlayMPE TEST containers), you can use them when they are there
+T_GENRE,        "UFmt"
+T_LABEL,        "ULbl"
+T_COMPOSER,     "UWrt"
+T_ALBUM,        "UAlb"
+T_MIX,          "UMix"
+T_ARTIST,       "UArt"
+T_TITLE,        "UTit"
+
+********************
+
+Yeah, the Windows version does that, when the track from the collapsed
+bundle is ended, the next one from the bundle starts playing (also if you
+skip to the next or previous track). Also, the bundle automatically expands
+when the next track starts playing, which I think is good, just to let user
+know what's actually playing.
+Putting it into a future build is more than fine.
+
+See below. Is this something we can put into the next version - 
+a warning when over the burn time of a CDR? 
+We also need to have CD text supported if possible.
+
+********************
+
+How soon can you implement the following changes?
+Auto-login, if the user have the username/password remembered AND the player is launched by the destinympe:// protocol. 
+Continuous streaming to the next track in a bundle.  Just eplace Javascript call to stopAllPlay with stopAndPlayNext when it finishes streaming one song.  Still call stopAllPlay when the user hit the Stop buttons.  
+
+external links -- Faith Evans : Tru Love
+.doc -- deSoL : Karma
+.pdf -- CC Jones : Worth It All 
+
+http://developer.apple.com/documentation/Cocoa/Reference/WebKit/ObjC_classic/Protocols/WebDocumentRepres.html#//apple_ref/occ/intf/WebDocumentRepresentation
+about registering for MIME types
+
+http://developer.apple.com/documentation/Cocoa/Reference/WebKit/ObjC_classic/index.html#//apple_ref/doc/uid/TP30000745
+WebKit reference
+
+Login:
+Loading https://promoonly.destinympe.com/cgi-local/v2/user/user_account3.cgi
+Loading https://promoonly.destinympe.com/cgi-local/v2/user/user_account3.cgi?d=69692b4b4478425f7463386377565968764e563034553142486d634c31676133667578756c68626a427052536e65575a456654477371726177774a6a6e734f7a392b66526578743971766f6d4d53794e5748356c63734f37
+
+Download:
+#1 Loading https://promoonly.destinympe.com/cgi-local/v2/download.cgi/?d=73336f71656e72764c437778506a6c624c347345764b6a56564a6c534d50684b68704477734561614a384330476831307744714d4256584a4d5f413366716161596433746c4a414f31306244667478426a6f6e4f6d4773527664427a3
+#2 Loading https://promoonly.destinympe.com/cgi-local/v2/download.cgi/?d=3159665330324c68362b4537533661546b7257377a4639305a77517665552b646544544b67584677756a486a643370474b5f534c5a794b5344355170734d453854514d6f4e5655325a73637153716a363257386670685261535154724
+
+Play:
+Loading http://player.destinympe.com/preview/preview.oggx?d=30637759464f6251493355545842725269434e3837626971584638746e5f4458736c534b3974793447313762306d4876434a77477766567450694e3778645356774366434857654c6955696457615a56765f4965694a71305866574d44584571486
+
+--generate-strings-file MainMenu.strings MainMenu.xib
+
+
+NSConditionLock
+- (void)produceData
+{
+   [condition lock];
+   // Produce new data
+   newDataExists = YES;
+   [condition signal];
+   [condition unlock];
+}
+- (void)consumeData
+{
+   [condition lock];
+   while (!newDataExists)
+      [condition wait];
+
+   // consume the new data
+   newDataExists = NO;
+   [condition unlock];
+}

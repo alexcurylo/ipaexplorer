@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleVersion</key>
+	<string>kBuild</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0(kBuild)</string>
+	<key>CFBundleGetInfoString</key>
+	<string>IPAManager version 1.0(kBuild), Copyright 2009 Trollwerks</string>
+	<key>CFBundleLongVersionString</key>
+	<string>IPAManager version 1.0(kBuild), Copyright 2009 Trollwerks</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>IPAManager version 1.0(kBuild), Copyright 2009 Trollwerks</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleIconFile</key>
+	<string></string>
+	<key>CFBundleIdentifier</key>
+	<string>com.trollwerks.ipamanager</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>${PRODUCT_NAME}</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.5.0</string>
+</dict>
+</plist>

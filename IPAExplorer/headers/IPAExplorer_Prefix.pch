@@ -1,0 +1,15 @@
+//
+// Prefix header for all source files of the 'IPAExplorer' target in the 'IPAExplorer' project
+//
+
+#import "TWDebugging.h"
+
+#ifdef __OBJC__
+#import <Cocoa/Cocoa.h>
+#else
+#include <TargetConditionals.h>
+#include <CoreFoundation/CoreFoundation.h>
+#endif __OBJC__
+
+// for minizip
+#define unix 1
