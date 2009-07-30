@@ -26,6 +26,8 @@
 		FA1BF8551001C2D000D0DDEE /* ZipArchive.m in Sources */ = {isa = PBXBuildFile; fileRef = FA1BF84B1001C2D000D0DDEE /* ZipArchive.m */; };
 		FA1BFC3C1002857300D0DDEE /* TWXNSString.m in Sources */ = {isa = PBXBuildFile; fileRef = FA1BFC391002857300D0DDEE /* TWXNSString.m */; };
 		FA1BFC3D1002857300D0DDEE /* TWXNSIndexSet.m in Sources */ = {isa = PBXBuildFile; fileRef = FA1BFC3B1002857300D0DDEE /* TWXNSIndexSet.m */; };
+		FA34BE351006BE5400ADACCF /* TWKeystrokeTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = FA34BE341006BE5400ADACCF /* TWKeystrokeTableView.m */; };
+		FA424BDD10083205000A8A1B /* TWImageTextCell.m in Sources */ = {isa = PBXBuildFile; fileRef = FA424BDB10083205000A8A1B /* TWImageTextCell.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,7 +36,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* IPAExplorer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IPAExplorer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		FA1BF7301001A92D00D0DDEE /* PlayMPENotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PlayMPENotes.txt; sourceTree = "<group>"; };
+		FA1BF7301001A92D00D0DDEE /* IPAExplorerNotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = IPAExplorerNotes.txt; sourceTree = "<group>"; };
 		FA1BF7361001AA1A00D0DDEE /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		FA1BF7391001AA1A00D0DDEE /* TWDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWDebugging.h; sourceTree = "<group>"; };
 		FA1BF73A1001AA1A00D0DDEE /* TWDebugging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWDebugging.m; sourceTree = "<group>"; };
@@ -73,6 +75,10 @@
 		FA1BFC391002857300D0DDEE /* TWXNSString.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWXNSString.m; sourceTree = "<group>"; };
 		FA1BFC3A1002857300D0DDEE /* TWXNSString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWXNSString.h; sourceTree = "<group>"; };
 		FA1BFC3B1002857300D0DDEE /* TWXNSIndexSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWXNSIndexSet.m; sourceTree = "<group>"; };
+		FA34BE331006BE5400ADACCF /* TWKeystrokeTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWKeystrokeTableView.h; sourceTree = "<group>"; };
+		FA34BE341006BE5400ADACCF /* TWKeystrokeTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWKeystrokeTableView.m; sourceTree = "<group>"; };
+		FA424BDB10083205000A8A1B /* TWImageTextCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TWImageTextCell.m; sourceTree = "<group>"; };
+		FA424BDC10083205000A8A1B /* TWImageTextCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TWImageTextCell.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,7 +128,7 @@
 		FA1BF72F1001A92D00D0DDEE /* notes */ = {
 			isa = PBXGroup;
 			children = (
-				FA1BF7301001A92D00D0DDEE /* PlayMPENotes.txt */,
+				FA1BF7301001A92D00D0DDEE /* IPAExplorerNotes.txt */,
 			);
 			path = notes;
 			sourceTree = "<group>";
@@ -169,10 +175,14 @@
 			children = (
 				FA1BF7391001AA1A00D0DDEE /* TWDebugging.h */,
 				FA1BF73A1001AA1A00D0DDEE /* TWDebugging.m */,
+				FA424BDC10083205000A8A1B /* TWImageTextCell.h */,
+				FA424BDB10083205000A8A1B /* TWImageTextCell.m */,
 				FA1BFC381002857300D0DDEE /* TWXNSIndexSet.h */,
 				FA1BFC3B1002857300D0DDEE /* TWXNSIndexSet.m */,
 				FA1BFC3A1002857300D0DDEE /* TWXNSString.h */,
 				FA1BFC391002857300D0DDEE /* TWXNSString.m */,
+				FA34BE331006BE5400ADACCF /* TWKeystrokeTableView.h */,
+				FA34BE341006BE5400ADACCF /* TWKeystrokeTableView.m */,
 			);
 			path = twlib;
 			sourceTree = "<group>";
@@ -304,6 +314,8 @@
 				FA1BF8551001C2D000D0DDEE /* ZipArchive.m in Sources */,
 				FA1BFC3C1002857300D0DDEE /* TWXNSString.m in Sources */,
 				FA1BFC3D1002857300D0DDEE /* TWXNSIndexSet.m in Sources */,
+				FA34BE351006BE5400ADACCF /* TWKeystrokeTableView.m in Sources */,
+				FA424BDD10083205000A8A1B /* TWImageTextCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

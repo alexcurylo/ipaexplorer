@@ -6,6 +6,14 @@
 
 @interface NSString (TWXNSString)
 
++ (id)stringWithUUID;
+
+//+ (id)stringWithMachineSerialNumber;
+
+// AppleScript helpers
+
+- (void)revealInFinder;
+
 - (NSAppleEventDescriptor *)executeAppleScript;
 
 @end

@@ -6,6 +6,7 @@
 
 @class DBBackgroundView;
 @class IPAArchive;
+@class TWKeystrokeTableView;
 
 @interface DirectoryItem : NSObject
 {
@@ -17,8 +18,10 @@
    
    NSString *filetype;
    NSString *appname;
-   NSString *bundleID;
+   NSString *bundleid;
    NSString *version;
+   NSImage *iconImage;
+   NSInteger size;
 }
 
 @property (nonatomic, retain) NSString *filename;
@@ -27,8 +30,10 @@
 @property (nonatomic, assign) BOOL loadedInfo;
 @property (nonatomic, retain) NSString *filetype;
 @property (nonatomic, retain) NSString *appname;
-@property (nonatomic, retain) NSString *bundleID;
+@property (nonatomic, retain) NSString *bundleid;
 @property (nonatomic, retain) NSString *version;
+@property (nonatomic, retain) NSImage *iconImage;
+@property (nonatomic, assign) NSInteger size;
 
 + (DirectoryItem *)itemWithName:(NSString *)name inDirectory:(NSString *)directory;
 
@@ -36,6 +41,8 @@
 - (void)dealloc;
 
 - (void)loadInfo;
+
+- (NSString *)sizeString;
 
 - (BOOL)isDupe:(DirectoryItem *)otherItem;
 
@@ -48,11 +55,12 @@
    IBOutlet NSToolbarItem* _ibShowToolbarItem;
    IBOutlet NSToolbarItem* _ibDeleteToolbarItem;
 
-   IBOutlet NSTableView* _ibFileTableView;
+   IBOutlet TWKeystrokeTableView* _ibFileTableView;
       IBOutlet NSTableColumn* _ibFileTableFilenameColumn;
       IBOutlet NSTableColumn* _ibFileTableAppnameColumn;
       IBOutlet NSTableColumn* _ibFileTableVersionColumn;
       IBOutlet NSTableColumn* _ibFileTableBundleIDColumn;
+      IBOutlet NSTableColumn* _ibFileTableSizeColumn;
       IBOutlet NSTableColumn* _ibFileTableFileTypeColumn;
 
    IBOutlet DBBackgroundView *_ibStatusView;
@@ -78,6 +86,7 @@
 - (void)loadItemInfo;
 - (void)loadingThread;
 - (void)loadingThreadProgress:(NSNumber *)loaded;
+- (void)loadingThreadComplete;
 
 // NSValidatedUserInterfaceItem
 
@@ -93,6 +102,8 @@
 // table stuff
 
 - (NSInteger)selectionCount;
+
+- (void)tableViewDidRecieveDeleteKey:(id)sender;
 
 // NSTableViewDataSource
 
@@ -115,8 +126,8 @@
 
 // NSTableViewDelegate
 
+- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(int)row;
 /*
- - (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(int)row;
  - (BOOL)tableView:(NSTableView *)tableView shouldEditTableColumn:(NSTableColumn *)tableColumn row:(int)row;
  - (BOOL)selectionShouldChangeInTableView:(NSTableView *)aTableView;
  - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(int)row;

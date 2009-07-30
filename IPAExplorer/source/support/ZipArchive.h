@@ -7,6 +7,8 @@
 //  Copyright 2008  Inc. All rights reserved.
 //
 
+// http://www.iphonedevsdk.com/forum/iphone-sdk-development/7615-simple-objective-c-class-zip-unzip-zip-format-files.html
+
 //#import <UIKit/UIKit.h>
 
 //#include "../minizip/zip.h"
@@ -58,8 +60,9 @@
 extern NSString *kIPAName; // = @"IPAName";
 extern NSString *kIPAVersion; // = @"IPAVersion";
 extern NSString *kIPABundleID; // = @"IPABundleID";
+extern NSString *kIPAArtwork; // = @"IPAArtwork";
 enum {
-   kFullDictionaryCount = 3,
+   kFullDictionaryCount = 4,
 };
 
 @interface IPAArchive : ZipArchive
@@ -68,6 +71,8 @@ enum {
 
 - (NSMutableDictionary *)getIPAInfo;
 
+- (NSMutableData *)readCurrentFile;
+- (void)parseCurrentJPEG:(NSMutableDictionary *)infoDictionary;
 - (void)parseCurrentPlist:(NSMutableDictionary *)infoDictionary;
 
 @end

@@ -10,6 +10,14 @@
 #import "ZipArchive.h"
 #import "TWXNSIndexSet.h"
 #import "TWXNSString.h"
+#import "TWImageTextCell.h"
+
+NSString *kFileNameKey = @"filename";
+NSString *kAppNameKey = @"appname";
+NSString *kVersionKey = @"version";
+NSString *kBundleIDKey = @"bundleid";
+NSString *kSizeKey = @"size";
+NSString *kFileTypeKey = @"filename";
 
 @implementation DirectoryItem
 
@@ -19,8 +27,10 @@
 @synthesize loadedInfo;
 @synthesize filetype;
 @synthesize appname;
-@synthesize bundleID;
+@synthesize bundleid;
 @synthesize version;
+@synthesize iconImage;
+@synthesize size;
 
 + (DirectoryItem *)itemWithName:(NSString *)name inDirectory:(NSString *)directory
 {
@@ -37,6 +47,9 @@
    {
       self.filename = name;
       self.fullPath = [directory stringByAppendingPathComponent:name];
+      NSDictionary *attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:self.fullPath error:nil];
+      twcheck(attributes);
+      self.size = [[attributes objectForKey:NSFileSize] intValue];
    }
    
    return self;
@@ -52,6 +65,7 @@
    self.filetype = nil;
    self.appname = nil;
    self.version = nil;
+   self.iconImage = nil;
   
    [super dealloc];
 }
@@ -72,25 +86,48 @@
       NSDictionary *appInfo = [archive getIPAInfo];
       self.appname = [appInfo objectForKey:kIPAName];
       self.version = [appInfo objectForKey:kIPAVersion];
-      self.bundleID = [appInfo objectForKey:kIPABundleID];
+      self.bundleid = [appInfo objectForKey:kIPABundleID];
       
       if (self.appname.length)
          self.filetype = @"IPA";
       else
          self.filetype = @"ZIP";
+      
+      NSData *artworkFile = [appInfo objectForKey:kIPAArtwork];
+      twlogif(!artworkFile.length, "artwork FAIL:%@!", self.fullPath.lastPathComponent);
    }
    
    [archive UnzipCloseFile];
    self.loadedInfo = YES;
 }
 
+- (NSString *)sizeString
+{
+   NSString *suffix = @"KB";
+   float amount = self.size / 1024;
+   if (1024 <= amount)
+   {
+      suffix = @"MB";
+      amount = amount / 1024;
+      if (1024 <= amount)
+      {
+         suffix = @"GB";
+         amount = amount / 1024;
+      }
+   }
+   NSString *result = [NSString stringWithFormat:@"%.02f %@", amount, suffix];
+   
+   return result;
+}
+
 - (BOOL)isDupe:(DirectoryItem *)otherItem
 {
    if (!self.loadedInfo || !otherItem.loadedInfo)
       return NO;
-   if (![self.appname isEqual:otherItem.appname])
-      return NO;
-   if (![self.bundleID isEqual:otherItem.bundleID])
+   // we won't bother with appname -- we'll go by bundle ID only
+   //if (![self.appname isEqual:otherItem.appname])
+      //return NO;
+   if (![self.bundleid isEqual:otherItem.bundleid])
       return NO;
    return YES;
 }
@@ -138,6 +175,15 @@
    [_ibStatusView setBackgroundGradient:[CTGradient unifiedDarkGradient]];
 	[_ibStatusView setNeedsDisplay:YES];
 
+   // these can be set in IB? or autosaved?
+   NSArray *sortDescriptors = [NSArray arrayWithObjects:
+      [[[NSSortDescriptor alloc] initWithKey:kBundleIDKey ascending:YES selector:@selector(compare:)] autorelease],
+      [[[NSSortDescriptor alloc] initWithKey:kVersionKey ascending:YES selector:@selector(compare:)] autorelease],
+      nil
+   ];
+   [_ibFileTableView setSortDescriptors:sortDescriptors];
+   // */
+   
    [[self window] makeKeyAndOrderFront:nil];
    
    [self listTargetDirectory];
@@ -266,14 +312,7 @@
    while (NSNotFound != (idx = [setEnum nextIndex]))
    {
       DirectoryItem *item = [targetItems objectAtIndex:idx];
-      NSString *scriptText = @"tell application \"Finder\"\n"
-                              "   activate\n"
-                              "   set posixpath to \"%@\"\n"
-                              "   set finderpath to get POSIX file posixpath as string\n"
-                              "   reveal finderpath\n"
-                              "end tell";
-      NSString *script = [NSString stringWithFormat:scriptText, item.fullPath];
-      [script executeAppleScript];
+      [item.fullPath revealInFinder];
    }
 }
 
@@ -309,6 +348,13 @@
    (void)sender;
 
    [_ibFileTableView deselectAll:self];
+   NSArray *sortDescriptors = [NSArray arrayWithObjects:
+      [[[NSSortDescriptor alloc] initWithKey:kBundleIDKey ascending:YES selector:@selector(compare:)] autorelease],
+      [[[NSSortDescriptor alloc] initWithKey:kVersionKey ascending:YES selector:@selector(compare:)] autorelease],
+      nil
+   ];
+   [_ibFileTableView setSortDescriptors:sortDescriptors];   
+   
    int arrayIdx = 0;
    DirectoryItem *lastItem = nil;
    NSMutableIndexSet *indexes = nil;
@@ -344,6 +390,11 @@
    return indexes ? indexes.count : 0;
 }
 
+- (void)tableViewDidRecieveDeleteKey:(id)sender
+{
+   [self deleteSelection:sender];
+}
+
 #pragma mark -
 #pragma mark NSTableViewDataSource
 
@@ -369,8 +420,10 @@
       result = targetItem.loadedInfo ? targetItem.version : @"loading…";
    else if (tableColumn == _ibFileTableFileTypeColumn)
       result = targetItem.loadedInfo ? targetItem.filetype : @"loading…";
+   else if (tableColumn == _ibFileTableSizeColumn)
+      result = targetItem.sizeString;
    else if (tableColumn == _ibFileTableBundleIDColumn)
-      result = targetItem.loadedInfo ? targetItem.bundleID : @"loading…";
+      result = targetItem.loadedInfo ? targetItem.bundleid : @"loading…";
     else
       twlog("what table column is %@?", [tableColumn description]);
    
@@ -382,6 +435,7 @@
    (void)oldDescriptors;
    
 	NSArray *newDescriptors = [tableView sortDescriptors];
+   //twlog("newDescriptors: %@", newDescriptors);
 	[targetItems sortUsingDescriptors:newDescriptors];
 	[tableView reloadData];
 }
@@ -402,8 +456,25 @@
 #pragma mark -
 #pragma mark NSTableViewDelegate
 
+- (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(int)row
+{	 
+   (void)tableView;
+   
+	if (tableColumn != _ibFileTableAppnameColumn)
+      return;
+   
+	if (![cell isKindOfClass:[TWImageTextCell class]])
+      return;
+
+   DirectoryItem *targetItem = [targetItems objectAtIndex:row];
+   NSImage *image = targetItem.iconImage;
+   
+   if (!image)
+      image = [NSImage imageNamed:@"NSApplicationIcon"];
+   [(TWImageTextCell*)cell setImage:image];
+}
+
 /*
- - (void)tableView:(NSTableView *)tableView willDisplayCell:(id)cell forTableColumn:(NSTableColumn *)tableColumn row:(int)row;
  - (BOOL)tableView:(NSTableView *)tableView shouldEditTableColumn:(NSTableColumn *)tableColumn row:(int)row;
  - (BOOL)selectionShouldChangeInTableView:(NSTableView *)aTableView;
  - (BOOL)tableView:(NSTableView *)tableView shouldSelectRow:(int)row;

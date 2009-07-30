@@ -43,30 +43,30 @@ uLong* bytesRecovered;
   if (fpZip != NULL &&  fpOut != NULL) {
     int entries = 0;
     uLong totalBytes = 0;
-    char header[30];
+    char fileHeader[30];
     char filename[256];
     char extra[1024];
     int offset = 0;
     int offsetCD = 0;
-    while ( fread(header, 1, 30, fpZip) == 30 ) {
+    while ( fread(fileHeader, 1, 30, fpZip) == 30 ) {
       int currentOffset = offset;
 
       /* File entry */
-      if (READ_32(header) == 0x04034b50) {
-        unsigned int version = READ_16(header + 4);
-        unsigned int gpflag = READ_16(header + 6);
-        unsigned int method = READ_16(header + 8);
-        unsigned int filetime = READ_16(header + 10);
-        unsigned int filedate = READ_16(header + 12);
-        unsigned int crc = READ_32(header + 14); /* crc */
-        unsigned int cpsize = READ_32(header + 18); /* compressed size */
-        unsigned int uncpsize = READ_32(header + 22); /* uncompressed sz */
-        unsigned int fnsize = READ_16(header + 26); /* file name length */
-        unsigned int extsize = READ_16(header + 28); /* extra field length */
+      if (READ_32(fileHeader) == 0x04034b50) {
+        unsigned int version = READ_16(fileHeader + 4);
+        unsigned int gpflag = READ_16(fileHeader + 6);
+        unsigned int method = READ_16(fileHeader + 8);
+        unsigned int filetime = READ_16(fileHeader + 10);
+        unsigned int filedate = READ_16(fileHeader + 12);
+        unsigned int crc = READ_32(fileHeader + 14); /* crc */
+        unsigned int cpsize = READ_32(fileHeader + 18); /* compressed size */
+        unsigned int uncpsize = READ_32(fileHeader + 22); /* uncompressed sz */
+        unsigned int fnsize = READ_16(fileHeader + 26); /* file name length */
+        unsigned int extsize = READ_16(fileHeader + 28); /* extra field length */
         filename[0] = extra[0] = '\0';
         
         /* Header */
-        if (fwrite(header, 1, 30, fpOut) == 30) {
+        if (fwrite(fileHeader, 1, 30, fpOut) == 30) {
           offset += 30;
         } else {
           err = Z_ERRNO;
@@ -138,28 +138,28 @@ uLong* bytesRecovered;
         
         /* Central directory entry */
         {
-          char header[46];
+          char entryHeader[46];
           char* comment = "";
           int comsize = (int) strlen(comment);
-          WRITE_32(header, 0x02014b50);
-          WRITE_16(header + 4, version);
-          WRITE_16(header + 6, version);
-          WRITE_16(header + 8, gpflag);
-          WRITE_16(header + 10, method);
-          WRITE_16(header + 12, filetime);
-          WRITE_16(header + 14, filedate);
-          WRITE_32(header + 16, crc);
-          WRITE_32(header + 20, cpsize);
-          WRITE_32(header + 24, uncpsize);
-          WRITE_16(header + 28, fnsize);
-          WRITE_16(header + 30, extsize);
-          WRITE_16(header + 32, comsize);
-          WRITE_16(header + 34, 0);     /* disk # */
-          WRITE_16(header + 36, 0);     /* int attrb */
-          WRITE_32(header + 38, 0);     /* ext attrb */
-          WRITE_32(header + 42, currentOffset);
+          WRITE_32(entryHeader, 0x02014b50);
+          WRITE_16(entryHeader + 4, version);
+          WRITE_16(entryHeader + 6, version);
+          WRITE_16(entryHeader + 8, gpflag);
+          WRITE_16(entryHeader + 10, method);
+          WRITE_16(entryHeader + 12, filetime);
+          WRITE_16(entryHeader + 14, filedate);
+          WRITE_32(entryHeader + 16, crc);
+          WRITE_32(entryHeader + 20, cpsize);
+          WRITE_32(entryHeader + 24, uncpsize);
+          WRITE_16(entryHeader + 28, fnsize);
+          WRITE_16(entryHeader + 30, extsize);
+          WRITE_16(entryHeader + 32, comsize);
+          WRITE_16(entryHeader + 34, 0);     /* disk # */
+          WRITE_16(entryHeader + 36, 0);     /* int attrb */
+          WRITE_32(entryHeader + 38, 0);     /* ext attrb */
+          WRITE_32(entryHeader + 42, currentOffset);
           /* Header */
-          if (fwrite(header, 1, 46, fpOutCD) == 46) {
+          if (fwrite(entryHeader, 1, 46, fpOutCD) == 46) {
             offsetCD += 46;
             
             /* Filename */
@@ -213,23 +213,23 @@ uLong* bytesRecovered;
     /* Final central directory  */
     {
       int entriesZip = entries;
-      char header[22];
+      char directoryHeader[22];
       char* comment = ""; // "ZIP File recovered by zlib/minizip/mztools";
       int comsize = (int) strlen(comment);
       if (entriesZip > 0xffff) {
         entriesZip = 0xffff;
       }
-      WRITE_32(header, 0x06054b50);
-      WRITE_16(header + 4, 0);    /* disk # */
-      WRITE_16(header + 6, 0);    /* disk # */
-      WRITE_16(header + 8, entriesZip);   /* hack */
-      WRITE_16(header + 10, entriesZip);  /* hack */
-      WRITE_32(header + 12, offsetCD);    /* size of CD */
-      WRITE_32(header + 16, offset);      /* offset to CD */
-      WRITE_16(header + 20, comsize);     /* comment */
+      WRITE_32(directoryHeader, 0x06054b50);
+      WRITE_16(directoryHeader + 4, 0);    /* disk # */
+      WRITE_16(directoryHeader + 6, 0);    /* disk # */
+      WRITE_16(directoryHeader + 8, entriesZip);   /* hack */
+      WRITE_16(directoryHeader + 10, entriesZip);  /* hack */
+      WRITE_32(directoryHeader + 12, offsetCD);    /* size of CD */
+      WRITE_32(directoryHeader + 16, offset);      /* offset to CD */
+      WRITE_16(directoryHeader + 20, comsize);     /* comment */
       
       /* Header */
-      if (fwrite(header, 1, 22, fpOutCD) == 22) {
+      if (fwrite(directoryHeader, 1, 22, fpOutCD) == 22) {
         
         /* Comment field */
         if (comsize > 0) {

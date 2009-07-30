@@ -14,6 +14,7 @@
 NSString *kIPAName = @"IPAName";
 NSString *kIPAVersion = @"IPAVersion";
 NSString *kIPABundleID = @"IPABundleID";
+NSString *kIPAArtwork = @"IPAArtwork";
 
 /* how to archive subfolders
  ZipArchive *zipArchive = [[ZipArchive alloc] init];
@@ -266,6 +267,9 @@ NSString *kIPABundleID = @"IPABundleID";
    NSMutableDictionary *infoDictionary = [NSMutableDictionary dictionary];
    BOOL foundInfoPlist = NO;
    
+   //if ([@"!Rebolt! (v1.0).ipa" isEqual:self.archivePath.lastPathComponent])
+      //twlog("starting questionable getIPAInfo!");
+
    if (!_unzFile)
    {
       twlog("could not open %@!", self.archivePath.lastPathComponent);
@@ -311,6 +315,17 @@ NSString *kIPABundleID = @"IPABundleID";
          [self parseCurrentPlist:infoDictionary];
       }
       
+      //else if (!strcmp(filename, "iTunesArtwork"))
+      // a *properly* constructed zip archive will have this ... but some aren't!
+      // probably need to fix this for signing them...
+      //else if (!strcmp(filename, "iTunesArtwork"))
+      else if (!strstr(filename, "iTunesArtwork"))
+      {
+         // guard against duplicates, although that would be very odd
+         if (![infoDictionary objectForKey:kIPAArtwork])
+            [self parseCurrentJPEG:infoDictionary];
+      }
+      
       ret = unzCloseCurrentFile( _unzFile );
       twcheck(UNZ_OK == ret);
       
@@ -323,18 +338,24 @@ NSString *kIPABundleID = @"IPABundleID";
    while (UNZ_OK == ret);
 
    if (!foundInfoPlist)
-      twlog("could not find Info.plist for %@!", self.archivePath.lastPathComponent);
+      twlog("could not find any Info.plist for %@!", self.archivePath.lastPathComponent);
    else
-      twlog("could not find name or version (%@) in Info.plist for %@!", infoDictionary, self.archivePath.lastPathComponent);
-
+   {
+      if (![infoDictionary objectForKey:kIPAName])
+         twlog("could not find name in archive for %@!", self.archivePath.lastPathComponent);
+      if (![infoDictionary objectForKey:kIPAVersion])
+         twlog("could not find version in archive for %@!", self.archivePath.lastPathComponent);
+      if (![infoDictionary objectForKey:kIPABundleID])
+         twlog("could not find bundle id in archive for %@!", self.archivePath.lastPathComponent);
+      if (![infoDictionary objectForKey:kIPAArtwork])
+         twlog("could not find artwork in archive for %@!", self.archivePath.lastPathComponent);
+   }
+   
    return infoDictionary;
 }
 
-- (void)parseCurrentPlist:(NSMutableDictionary *)infoDictionary
+- (NSMutableData *)readCurrentFile
 {
-   //if ([@"Family Guy-1.0.ipa.zip" isEqual:self.archivePath.lastPathComponent])
-      //twlog("starting questionable parse!");
-   
    NSMutableData *data = [NSMutableData data];
    int readSize = 0;
    const int kFileBufferSize = 4 * 1024;
@@ -346,13 +367,36 @@ NSString *kIPABundleID = @"IPABundleID";
          [data appendBytes:plistBuffer length:readSize];
       else if (0 > readSize)
       {
-         twlog("plist reading error %i!", readSize);
+         twlog("file reading error %i!", readSize);
          int ret = unzCloseCurrentFile( _unzFile );
          (void)ret;
-         return;
+         return nil;
       }
    }
    while (readSize);
+   
+   return data;
+}
+
+- (void)parseCurrentJPEG:(NSMutableDictionary *)infoDictionary;
+{
+   NSMutableData *data = [self readCurrentFile];
+   
+   if (data && data.length)
+      [infoDictionary setObject:data forKey:kIPAArtwork];
+}
+
+- (void)parseCurrentPlist:(NSMutableDictionary *)infoDictionary
+{
+   //if ([@"Family Guy-1.0.ipa.zip" isEqual:self.archivePath.lastPathComponent])
+      //twlog("starting questionable parse!");
+   
+   NSMutableData *data = [self readCurrentFile];
+   if (!data)
+   {
+      twlog("plist reading error!");
+      return;
+   }
    
    NSString *errorDesc = nil;
    NSPropertyListFormat format = 0;
