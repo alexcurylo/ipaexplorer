@@ -71,7 +71,7 @@ enum {
 
 - (NSMutableDictionary *)getIPAInfo;
 
-- (NSMutableData *)readCurrentFile;
+- (NSMutableData *)readCurrentFile:(NSUInteger)maxSizeExpected;
 - (void)parseCurrentJPEG:(NSMutableDictionary *)infoDictionary;
 - (void)parseCurrentPlist:(NSMutableDictionary *)infoDictionary;
 

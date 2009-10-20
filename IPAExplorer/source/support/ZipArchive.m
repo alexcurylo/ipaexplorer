@@ -354,9 +354,10 @@ NSString *kIPAArtwork = @"IPAArtwork";
    return infoDictionary;
 }
 
-- (NSMutableData *)readCurrentFile
+- (NSMutableData *)readCurrentFile:(NSUInteger)maxSizeExpected
 {
    NSMutableData *data = [NSMutableData data];
+   NSUInteger sizeCheck = 0;
    int readSize = 0;
    const int kFileBufferSize = 4 * 1024;
    char plistBuffer[kFileBufferSize];
@@ -364,7 +365,16 @@ NSString *kIPAArtwork = @"IPAArtwork";
    {
       readSize = unzReadCurrentFile(_unzFile, plistBuffer, kFileBufferSize);
       if (0 < readSize)
+      {
          [data appendBytes:plistBuffer length:readSize];
+
+         sizeCheck = data.length;
+         if (sizeCheck > maxSizeExpected)
+         {
+            twlog("unzReadCurrentFile claims over maxSizeExpected -- aborting!", readSize);
+            return nil;
+         }
+      }
       else if (0 > readSize)
       {
          twlog("file reading error %i!", readSize);
@@ -380,7 +390,7 @@ NSString *kIPAArtwork = @"IPAArtwork";
 
 - (void)parseCurrentJPEG:(NSMutableDictionary *)infoDictionary;
 {
-   NSMutableData *data = [self readCurrentFile];
+   NSMutableData *data = [self readCurrentFile:10 * 1024 * 1024];
    
    if (data && data.length)
       [infoDictionary setObject:data forKey:kIPAArtwork];
@@ -391,7 +401,7 @@ NSString *kIPAArtwork = @"IPAArtwork";
    //if ([@"Family Guy-1.0.ipa.zip" isEqual:self.archivePath.lastPathComponent])
       //twlog("starting questionable parse!");
    
-   NSMutableData *data = [self readCurrentFile];
+   NSMutableData *data = [self readCurrentFile:1000 * 1024 * 1024];
    if (!data)
    {
       twlog("plist reading error!");
@@ -416,20 +426,23 @@ NSString *kIPAArtwork = @"IPAArtwork";
    //twlogif(!actuallyDictionary, "plist not a dictionary but %@", [dict class]);
    if (actuallyDictionary)
    {
-      NSString *nameString = [dict objectForKey:@"CFBundleDisplayName"];
-      if (!nameString)
-         nameString = [dict objectForKey:@"Bundle Display Name"]; // FamilyGuy had this
+      NSString *displayString = [dict objectForKey:@"CFBundleDisplayName"];
+      if (!displayString)
+         displayString = [dict objectForKey:@"Bundle Display Name"]; // FamilyGuy had this
 
-      if (!nameString) // don't let localized names get overwritten by Info.plist keys ... other way around is ok
-         nameString = [infoDictionary objectForKey:kIPAName];
+      if (!displayString) // don't let localized names get overwritten by Info.plist keys ... other way around is ok
+         displayString = [infoDictionary objectForKey:kIPAName];
       
-      if (!nameString)
-         nameString = [dict objectForKey:@"CFBundleName"]; // FlightOfTheAmazonQueen, GymBuddy, HornyMeter, Music_Catch, Shopper had this
-      if (!nameString)
-         nameString = [dict objectForKey:@"CFBundleExecutable"]; // VoiceThis had no name keys at all?
-      if (nameString)
-         [infoDictionary setObject:nameString forKey:kIPAName];
-
+      NSString *nameString = [dict objectForKey:@"CFBundleName"]; // FlightOfTheAmazonQueen, GymBuddy, HornyMeter, Music_Catch, Shopper had this
+ 
+      NSString *executableString = [dict objectForKey:@"CFBundleExecutable"]; // VoiceThis had no name keys at all?
+      
+      if (executableString) // for now we'll only use main plist keys
+      {
+         NSString *tableText = [NSString stringWithFormat:@"“%@”: %@ [%@]", displayString, nameString, executableString];
+         [infoDictionary setObject:tableText forKey:kIPAName];
+      }
+      
       NSString *bundleVersion = [dict objectForKey:@"CFBundleVersion"];
       NSString *bundleVersionString = [dict objectForKey:@"CFBundleShortVersionString"];
       if (bundleVersion || bundleVersionString)

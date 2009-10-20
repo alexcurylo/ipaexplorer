@@ -3,12 +3,12 @@
 
 - sidebar with source folders (installed, library)
 
+- what's the deal with Navigon stuff?
 
 - search
 http://mattgemmell.com/source -- MGScopeBar
 
 http://www.cocoadev.com/index.pl?NSTableViewTutorial
-
 - key search for selected column?
 
 - app icon
@@ -17,3 +17,5 @@ http://code.google.com/p/iphuc/
 An OpenSource command line interface to the iPhone.
 For Windows, you can see iPhoneBrowser - I have a custom version of
 Manzana (also on Google Code) in the source that works with 8.2.
+
+Anything helpful in iPhone Hacks book?
