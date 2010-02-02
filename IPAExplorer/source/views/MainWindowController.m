@@ -176,13 +176,14 @@ NSString *kFileTypeKey = @"filename";
 	[_ibStatusView setNeedsDisplay:YES];
 
    // these can be set in IB? or autosaved?
-   NSArray *sortDescriptors = [NSArray arrayWithObjects:
+   // "The array of sort descriptors is archived.  Sort descriptors will persist along with other column information if an autosave name is set."
+   /*NSArray *sortDescriptors = [NSArray arrayWithObjects:
       [[[NSSortDescriptor alloc] initWithKey:kBundleIDKey ascending:YES selector:@selector(compare:)] autorelease],
       [[[NSSortDescriptor alloc] initWithKey:kVersionKey ascending:YES selector:@selector(compare:)] autorelease],
       nil
    ];
    [_ibFileTableView setSortDescriptors:sortDescriptors];
-   // */
+   */
    
    [[self window] makeKeyAndOrderFront:nil];
    
@@ -239,14 +240,23 @@ NSString *kFileTypeKey = @"filename";
    int loaded = 0;
    for (DirectoryItem *item in targetItems)
    {
+      //NSAutoreleasePool *itemPool = [[NSAutoreleasePool alloc] init];
+
       [item loadInfo];
       
       loaded++;
       if (!(loaded % 10))
+      {
          [self performSelectorOnMainThread:@selector(loadingThreadProgress:)
             withObject:[NSNumber numberWithInt:loaded]
             waitUntilDone:NO
          ];
+
+         [pool release];
+         pool = [[NSAutoreleasePool alloc] init];
+      }
+      
+      //[itemPool release];
    }
 
    [self performSelectorOnMainThread:@selector(loadingThreadComplete)

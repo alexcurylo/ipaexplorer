@@ -371,13 +371,13 @@ NSString *kIPAArtwork = @"IPAArtwork";
          sizeCheck = data.length;
          if (sizeCheck > maxSizeExpected)
          {
-            twlog("unzReadCurrentFile claims over maxSizeExpected -- aborting!", readSize);
+            twlog("unzReadCurrentFile data.length %d over maxSizeExpected %d -- aborting!", sizeCheck, maxSizeExpected);
             return nil;
          }
       }
       else if (0 > readSize)
       {
-         twlog("file reading error %i!", readSize);
+         twlog("readCurrentFile FAIL: file reading error %i!", readSize);
          int ret = unzCloseCurrentFile( _unzFile );
          (void)ret;
          return nil;
@@ -390,7 +390,8 @@ NSString *kIPAArtwork = @"IPAArtwork";
 
 - (void)parseCurrentJPEG:(NSMutableDictionary *)infoDictionary;
 {
-   NSMutableData *data = [self readCurrentFile:10 * 1024 * 1024];
+   // lots of "unzReadCurrentFile data.length 10489856 over maxSizeExpected 10485760 -- aborting!"
+   NSMutableData *data = [self readCurrentFile:100 * 1024 * 1024];
    
    if (data && data.length)
       [infoDictionary setObject:data forKey:kIPAArtwork];
@@ -401,7 +402,8 @@ NSString *kIPAArtwork = @"IPAArtwork";
    //if ([@"Family Guy-1.0.ipa.zip" isEqual:self.archivePath.lastPathComponent])
       //twlog("starting questionable parse!");
    
-   NSMutableData *data = [self readCurrentFile:1000 * 1024 * 1024];
+   // let's try 2 meg then
+   NSMutableData *data = [self readCurrentFile:2 * 1000 * 1024 * 1024];
    if (!data)
    {
       twlog("plist reading error!");
